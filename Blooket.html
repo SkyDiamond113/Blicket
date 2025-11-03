@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Blooket</title>
+    <link rel="icon" type="image/x-icon" href="https://www.blooket.com/favicon.ico">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:700,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blooket-main: #a36ce4;
+            --background: #f5f6fa;
+            --surface: #fff;
+            --surface-border: #ddd;
+            --header: #27284a;
+            --white: #fff;
+            --shadow: 0 2px 8px rgba(80,80,100,0.07);
+            --pack-silver: #C0C0C0;
+            --pack-interior: #5DADE2;
+            --popup-overlay: rgba(50,40,80,0.18);
+        }
+
+        body, button, .navbar, .pack-card, .pack-title-bar, .pack-price, 
+        .tokens-box, .admin-btn, .popup-modal, h1, h2, h3, h4, h5, h6,
+        .coin, .token-main, .rarity, .blook-result-card, span, div {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+
+        input[type=password], input[type=number], input[type=text], input[type=email], textarea {
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+        }
+
+        body {
+            font-family: 'Nunito', Arial, sans-serif;
+            background: var(--background);
+            min-height: 100vh;
+            margin: 0;
+            color: var(--header);
+        }
+        .navbar {
+            width: 100vw;
+            background: var(--blooket-main);
+            color: #fff;
+            padding: 0.8rem 0.8rem 0.8rem 40px;
+            font-size: 2rem;
+            font-weight: 800;
+            box-sizing: border-box;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            position: relative;
+        }
+        .navbar .icon {
+            width: 42px;
+            height: 32px;
+            background: url('https://www.blooket.com/favicon.ico') no-repeat center/contain;
+            display: inline-block;
+            margin-right: 12px;
+        }
+        .profile-picture {
+            position: absolute;
+            left: 280px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--blooket-main);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .profile-picture:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .right-controls {
+            display: flex;
+            gap: 16px;
+            position: absolute;
+            top: 18px;
+            right: 32px;
+            align-items: flex-start;
+        }
+        .tokens-box {
+            background: var(--surface);
+            color: var(--header);
+            font-weight: 900;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            border-radius: 18px;
+            border: 2px solid var(--surface-border);
+            box-shadow: var(--shadow);
+            padding: 4px 18px 4px 14px;
+            min-width: 70px;
+        }
+        .token-main, .coin {
+            width: 26px;
+            height: 26px;
+            margin-left: 8px;
+            margin-right: 0;
+            margin-top: 0;
+            display: inline-block;
+            background: url('https://cdn3.emoji.gg/emojis/1106-coin-gold.png') no-repeat center/contain;
+            vertical-align: middle;
+        }
+        .coin {
+            margin-left: 0;
+            margin-right: 7px;
+            margin-top: -2px;
+        }
+        .admin-btn, .toggle-btn, .collection-btn, .logout-btn {
+            background: var(--blooket-main);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-size: 1.06rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 7px rgba(80,80,120,0.11);
+            transition: filter 0.18s, transform 0.12s;
+            margin-top: 0;
+            margin-left: 0;
+        }
+        .toggle-btn {
+            background: #4ec07b;
+            padding: 12px 20px;
+            font-size: 0.95rem;
+        }
+        .toggle-btn.auto-mode {
+            background: #ff6b6b;
+        }
+        .collection-btn {
+            background: #209cee;
+        }
+        .logout-btn {
+            background: var(--blooket-main);
+            padding: 12px 20px;
+            font-size: 0.95rem;
+        }
+        .admin-btn:active,
+        .admin-btn:focus,
+        .admin-btn:hover,
+        .toggle-btn:active,
+        .toggle-btn:focus,
+        .toggle-btn:hover,
+        .collection-btn:active,
+        .collection-btn:focus,
+        .collection-btn:hover,
+        .logout-btn:active,
+        .logout-btn:focus,
+        .logout-btn:hover {
+            filter: brightness(107%);
+            transform: translateY(-2px);
+            outline: none;
+        }
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+            gap: 38px 50px;
+            max-width: 1200px;
+            margin: 60px auto 40px auto;
+            padding: 12px;
+        }
+        .pack-card {
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            width: 200px;
+            height: 200px;
+            min-width: 200px;
+            min-height: 200px;
+            max-width: 200px;
+            max-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto;
+            cursor: pointer;
+            background: var(--pack-silver);
+            overflow: visible;
+        }
+        .pack-card::before {
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: 0;
+            right: 0;
+            bottom: 22px;
+            background: var(--pack-interior);
+            z-index: 0;
+        }
+        .pack-card:hover {
+            filter: brightness(107%);
+            transform: translateY(-2px);
+        }
+        .pack-card:active {
+            transform: scale(0.98);
+            box-shadow: 0 0 0 transparent;
+        }
+        .pack-title-bar {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--header);
+            width: 100%;
+            text-align: center;
+            padding: 0 8px;
+            letter-spacing: 0.3px;
+            line-height: 1.3;
+            z-index: 2;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-150%);
+        }
+        .pack-info {
+            position: absolute;
+            top: 50%;
+            transform: translateY(50%);
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            text-align: center;
+            z-index: 2;
+        }
+        .pack-price {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--header);
+            letter-spacing: 0px;
+        }
+        
+        .collection-view {
+            display: none;
+            padding: 40px 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .collection-view.active {
+            display: block;
+        }
+        .collection-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .collection-header h1 {
+            font-size: 2.5rem;
+            color: var(--header);
+        }
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .collection-card {
+            background: var(--surface);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 2px solid #ecebf6;
+            position: relative;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .collection-card.locked {
+            background: #2a2a2a;
+            opacity: 0.6;
+            filter: brightness(0.4);
+        }
+        .collection-card .card-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--header);
+        }
+        .collection-card.locked .card-name {
+            color: #666;
+        }
+        .collection-card .card-rarity {
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .collection-card.locked .card-rarity {
+            color: #555;
+        }
+        .lock-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: #888;
+            opacity: 0.8;
+        }
+        
+        .auth-modal {
+            background: var(--surface);
+            border-radius: 18px;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 2px solid #ecebf6;
+        }
+        .auth-modal h2 {
+            margin: 0 0 20px 0;
+            font-size: 1.8rem;
+            color: var(--blooket-main);
+        }
+        .auth-modal input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid var(--blooket-main);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Nunito', sans-serif;
+            background: #f7f4fe;
+            color: var(--blooket-main);
+            box-sizing: border-box;
+        }
+        .auth-modal button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            transition: all 0.2s;
+        }
+        .auth-modal .btn-primary {
+            background: var(--blooket-main);
+            color: white;
+        }
+        .auth-modal .btn-primary:hover {
+            filter: brightness(110%);
+            transform: translateY(-2px);
+        }
+        .auth-modal .btn-secondary {
+            background: transparent;
+            color: var(--blooket-main);
+            border: 2px solid var(--blooket-main);
+        }
+        .auth-modal .btn-secondary:hover {
+            background: var(--blooket-main);
+            color: white;
+        }
+        .auth-modal .error-msg {
+            color: #ff6b6b;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .auth-modal .success-msg {
+            color: #4ec07b;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        
+        .profile-modal {
+            background: var(--surface);
+            border-radius: 18px;
+            padding: 40px;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 2px solid #ecebf6;
+        }
+        .profile-modal h2 {
+            margin: 0 0 25px 0;
+            font-size: 1.8rem;
+            color: var(--blooket-main);
+        }
+        .profile-modal .profile-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--blooket-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .profile-info {
+            text-align: left;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f7f4fe;
+            border-radius: 12px;
+        }
+        .profile-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0d7f5;
+        }
+        .profile-info-item:last-child {
+            border-bottom: none;
+        }
+        .profile-info-label {
+            font-weight: 600;
+            color: var(--blooket-main);
+        }
+        .profile-info-value {
+            color: var(--header);
+            font-weight: 500;
+        }
+        
+        .confirm-modal {
+            background: var(--surface);
+            border-radius: 18px;
+            padding: 32px 40px;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 2px solid #ecebf6;
+        }
+        .confirm-modal h2 {
+            margin: 0 0 8px 0;
+            font-size: 1.5rem;
+            color: var(--header);
+        }
+        .confirm-modal .token-icon {
+            width: 28px;
+            height: 28px;
+            display: inline-block;
+            background: url('https://cdn3.emoji.gg/emojis/1106-coin-gold.png') no-repeat center/contain;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
+        .confirm-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: center;
+        }
+        .confirm-btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .confirm-btn.yes {
+            background: #00C9FF;
+            color: white;
+        }
+        .confirm-btn.yes:hover {
+            background: #00B8EE;
+            transform: translateY(-2px);
+        }
+        .confirm-btn.no {
+            background: #e0e0e0;
+            color: var(--header);
+        }
+        .confirm-btn.no:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+        
+        .logout-modal {
+            background: var(--surface);
+            border-radius: 18px;
+            padding: 32px 40px;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            border: 2px solid #ecebf6;
+        }
+        .logout-modal h2 {
+            margin: 0 0 12px 0;
+            font-size: 1.5rem;
+            color: var(--header);
+        }
+        .logout-modal p {
+            margin: 12px 0;
+            font-size: 1rem;
+            color: #666;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0; right: 0; top: 0; bottom: 0;
+            width: 100vw; height: 100vh;
+            background: var(--popup-overlay);
+            justify-content: center;
+            align-items: center;
+        }
+        .overlay.active { display: flex; }
+        .overlay.no-close {
+            background: rgba(50,40,80,0.95);
+        }
+        .popup-modal {
+            background: var(--surface);
+            color: var(--header);
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(80,80,120,0.13);
+            padding: 42px 45px 32px 45px;
+            min-width: 330px;
+            max-width: 90vw;
+            position: relative;
+            border: 2px solid #ecebf6;
+            animation: popupIn 0.2s;
+        }
+        @keyframes popupIn { from { opacity: 0; transform: scale(0.85);} to { opacity: 1; transform: scale(1);}}
+        .close-x {
+            position: absolute;
+            right: 14px;
+            top: 12px;
+            font-size: 1.8rem;
+            color: var(--blooket-main);
+            font-weight: 900;
+            cursor: pointer;
+            transition: color 0.18s;
+            line-height: 1;
+        }
+        .close-x:hover { color: #D35EF7; }
+        input[type=password], input[type=number] {
+            font-family: 'Nunito', Arial, sans-serif;
+            border-radius: 8px;
+            border: 2px solid var(--blooket-main);
+            padding: 10px 15px;
+            margin: 8px 0;
+            font-size: 1rem;
+            background: #f7f4fe;
+            color: var(--blooket-main);
+        }
+        input[type=password]:focus, input[type=number]:focus, input[type=text]:focus, input[type=email]:focus {
+            border-color: var(--blooket-main);
+            outline: none;
+        }
+        button { outline: none; }
+        .popup-modal h3 {
+            margin: 20px 0 14px 0;
+            color: var(--blooket-main);
+            font-size: 1.18rem;
+            text-align: center;
+        }
+        #adminError { color: #C33030; font-weight: 700; }
+        #adminStatus { color: #4ec07b; font-weight: 700; }
+        #adminPanel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        #adminPanel input[type=number] {
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+        }
+        #adminPanel button {
+            background: var(--blooket-main);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-size: 1.06rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 2px 7px rgba(80,80,120,0.11);
+            transition: filter 0.18s, transform 0.12s;
+            margin: 8px 0;
+            width: 100%;
+            max-width: 300px;
+        }
+        #adminPanel button:hover {
+            filter: brightness(107%);
+            transform: translateY(-2px);
+        }
+        .blook-result-card {
+            background: var(--surface);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            width: 220px;
+            min-height: 120px;
+            padding: 20px 0 18px 0;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #15142c;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border: 3px solid #ecebf6;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+        }
+        .rarity.Legendary { color: #E7920A }
+        .rarity.Epic      { color: #a36ce4 }
+        .rarity.Rare      { color: #209cee }
+        .rarity.Uncommon  { color: #4ec07b }
+        .rarity.Common    { color: #aaaaaa }
+        .rarity.Mythic    { color: #FF1493 }
+        .rarity.Chroma    { color: #00CED1 }
+        .rarity.Immortal  { color: #FFD700 }
+        .rarity.Godly     { color: #9400D3 }
+        .rarity.Abyssal   { color: #000000 }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <span class="icon"></span>Blooket
+        <div class="profile-picture" id="profilePicture" onclick="showProfilePopup()"></div>
+        <div class="right-controls">
+            <button class="logout-btn" onclick="logout()" style="display:none;" id="logoutBtn">Logout</button>
+            <button class="collection-btn" onclick="toggleCollection()" id="collectionToggle">Collection</button>
+            <button class="toggle-btn" id="toggleBtn" onclick="toggleMode()">Confirm</button>
+            <div class="tokens-box">
+                <span id="tokenCount">100</span>
+                <span class="token-main"></span>
+            </div>
+            <button class="admin-btn" onclick="showAdminPopup()" tabindex="1">Admin</button>
+        </div>
+    </div>
+    
+    <div class="market-grid" id="marketView">
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Aquatic Pack', 20)">
+            <div class="pack-title-bar">Aquatic Pack</div>
+            <div class="pack-info"><span class="pack-price">20</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Blizzard Pack', 25)">
+            <div class="pack-title-bar">Blizzard Pack</div>
+            <div class="pack-info"><span class="pack-price">25</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Bot Pack', 20)">
+            <div class="pack-title-bar">Bot Pack</div>
+            <div class="pack-info"><span class="pack-price">20</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Breakfast Pack', 15)">
+            <div class="pack-title-bar">Breakfast Pack</div>
+            <div class="pack-info"><span class="pack-price">15</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Safari Pack', 30)">
+            <div class="pack-title-bar">Safari Pack</div>
+            <div class="pack-info"><span class="pack-price">30</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Medieval Pack', 35)">
+            <div class="pack-title-bar">Medieval Pack</div>
+            <div class="pack-info"><span class="pack-price">35</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Space Pack', 40)">
+            <div class="pack-title-bar">Space Pack</div>
+            <div class="pack-info"><span class="pack-price">40</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Wonderland Pack', 30)">
+            <div class="pack-title-bar">Wonderland Pack</div>
+            <div class="pack-info"><span class="pack-price">30</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Dino Pack', 30)">
+            <div class="pack-title-bar">Dino Pack</div>
+            <div class="pack-info"><span class="pack-price">30</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Spooky Pack', 45)">
+            <div class="pack-title-bar">Spooky Pack</div>
+            <div class="pack-info"><span class="pack-price">45</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Outback Pack', 20)">
+            <div class="pack-title-bar">Outback Pack</div>
+            <div class="pack-info"><span class="pack-price">20</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Pirate Pack', 35)">
+            <div class="pack-title-bar">Pirate Pack</div>
+            <div class="pack-info"><span class="pack-price">35</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Tropical Pack', 25)">
+            <div class="pack-title-bar">Tropical Pack</div>
+            <div class="pack-info"><span class="pack-price">25</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Candy Pack', 25)">
+            <div class="pack-title-bar">Candy Pack</div>
+            <div class="pack-info"><span class="pack-price">25</span></div>
+        </div>
+        <div class="pack-card" tabindex="0" onclick="handlePackClick('Fantasy Pack', 50)">
+            <div class="pack-title-bar">Fantasy Pack</div>
+            <div class="pack-info"><span class="pack-price">50</span></div>
+        </div>
+    </div>
+    
+    <div class="collection-view" id="collectionView">
+        <div class="collection-header"><h1>My Collection</h1></div>
+        <div class="collection-grid" id="collectionGrid"></div>
+    </div>
+    
+    <div class="overlay no-close active" id="authOverlay">
+        <div class="auth-modal">
+            <div id="loginView">
+                <h2>Welcome to Blooket!</h2>
+                <p style="margin-bottom: 20px; color: #666;">Login or create an account</p>
+                <input type="text" id="loginUsername" placeholder="Username">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <button class="btn-primary" onclick="handleLogin()">Login</button>
+                <button class="btn-secondary" onclick="showSignup()">Create Account</button>
+                <div id="loginError" class="error-msg"></div>
+            </div>
+            <div id="signupView" style="display:none;">
+                <h2>Create Account</h2>
+                <input type="text" id="signupUsername" placeholder="Username">
+                <input type="password" id="signupPassword" placeholder="Password">
+                <input type="password" id="signupConfirmPassword" placeholder="Confirm Password">
+                <button class="btn-primary" onclick="handleSignup()">Sign Up</button>
+                <button class="btn-secondary" onclick="showLogin()">Back to Login</button>
+                <div id="signupError" class="error-msg"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overlay" id="profileOverlay" onclick="closeProfilePopup()">
+        <div class="profile-modal" onclick="event.stopPropagation()">
+            <span class="close-x" onclick="closeProfilePopup()">&times;</span>
+            <h2>Account Information</h2>
+            <div class="profile-icon" id="profileIconLarge"></div>
+            <div class="profile-info">
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Username:</span>
+                    <span class="profile-info-value" id="profileUsername"></span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Account Created:</span>
+                    <span class="profile-info-value" id="profileCreated"></span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Total Tokens:</span>
+                    <span class="profile-info-value" id="profileTokens">0</span>
+                </div>
+                <div class="profile-info-item">
+                    <span class="profile-info-label">Cards Collected:</span>
+                    <span class="profile-info-value" id="profileCards">0</span>
+                </div>
+            </div>
+            <button class="btn-primary" style="margin-top: 20px;" onclick="confirmResetAccount()">Reset Account</button>
+        </div>
+    </div>
+    
+    <div class="overlay" id="confirmOverlay" onclick="closeConfirmation()">
+        <div class="confirm-modal" onclick="event.stopPropagation()">
+            <h2>Purchase the <span id="confirmPackName">Pack</span></h2>
+            <p style="margin: 12px 0; font-size: 1.1rem; color: #666;">
+                for <strong id="confirmPackPrice">0</strong> tokens?<span class="token-icon"></span>
+            </p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn no" onclick="closeConfirmation()">No</button>
+                <button class="confirm-btn yes" onclick="confirmPurchase()">Yes</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overlay" id="logoutOverlay" onclick="closeLogoutConfirmation()">
+        <div class="logout-modal" onclick="event.stopPropagation()">
+            <h2>Logout Confirmation</h2>
+            <p>Are you sure you want to logout?</p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn no" onclick="closeLogoutConfirmation()">Cancel</button>
+                <button class="confirm-btn yes" onclick="confirmLogout()">Logout</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overlay" id="blookOverlay" onclick="closeBlookPopup()">
+        <div class="popup-modal" id="blookPopup" style="cursor:pointer;" onclick="event.stopPropagation(); closeBlookPopup();">
+            <div id="blookRevealContainer"></div>
+        </div>
+    </div>
+    
+    <div class="overlay" id="resetOverlay" onclick="closeResetConfirmation()">
+        <div class="logout-modal" onclick="event.stopPropagation()">
+            <h2>Reset Account</h2>
+            <p>Are you sure you want to reset your account? This will delete all your tokens and collected cards. This action cannot be undone.</p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn no" onclick="closeResetConfirmation()">Cancel</button>
+                <button class="confirm-btn yes" onclick="resetAccount()">Reset Account</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overlay" id="adminOverlay">
+        <div class="popup-modal">
+            <span class="close-x" onclick="closeAdminPopup()">&times;</span>
+            <div id="adminLogin">
+                <h3>Admin Login</h3>
+                <input type="password" id="adminPwd" placeholder="Enter password">
+                <button onclick="adminLogin()">Login</button>
+                <div id="adminError"></div>
+            </div>
+            <div id="adminPanel" style="display:none;">
+                <h3>Admin Panel</h3>
+                <input type="number" id="tokenInput" placeholder="Set token amount">
+                <button onclick="setTokens()">Set Tokens</button>
+                <button id="unlockBtn" onclick="toggleAllCards()">Unlock All Cards</button>
+                <div id="adminStatus"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const packBlooks = {"Aquatic Pack":[{name:"Jellyfish",rarity:"Common"},{name:"Clownfish",rarity:"Common"},{name:"Starfish",rarity:"Common"},{name:"Seahorse",rarity:"Common"},{name:"Shrimp",rarity:"Common"},{name:"Crab",rarity:"Common"},{name:"Frog",rarity:"Uncommon"},{name:"Pufferfish",rarity:"Uncommon"},{name:"Angelfish",rarity:"Uncommon"},{name:"Stingray",rarity:"Uncommon"},{name:"Lobster",rarity:"Uncommon"},{name:"Squid",rarity:"Uncommon"},{name:"Octopus",rarity:"Rare"},{name:"Narwhal",rarity:"Rare"},{name:"Sea Turtle",rarity:"Rare"},{name:"Orca",rarity:"Rare"},{name:"Manta Ray",rarity:"Rare"},{name:"Electric Eel",rarity:"Rare"},{name:"Megalodon",rarity:"Epic"},{name:"Baby Shark",rarity:"Epic"},{name:"Hammerhead",rarity:"Epic"},{name:"Great White Shark",rarity:"Epic"},{name:"Kraken",rarity:"Legendary"},{name:"Blue Whale",rarity:"Legendary"},{name:"Leviathan",rarity:"Legendary"},{name:"Poseidon's Trident",rarity:"Mythic"},{name:"Pearl Dragon",rarity:"Mythic"},{name:"Neptune's Crown",rarity:"Mythic"},{name:"Prismatic Dolphin",rarity:"Chroma"},{name:"Crystal Jellyfish",rarity:"Chroma"},{name:"Rainbow Coral",rarity:"Chroma"},{name:"Eternal Tide",rarity:"Immortal"},{name:"Ocean Sovereign",rarity:"Godly"},{name:"Void Leviathan",rarity:"Abyssal"}],"Blizzard Pack":[{name:"Snowman",rarity:"Common"},{name:"Penguin",rarity:"Common"},{name:"Snow Owl",rarity:"Common"},{name:"Ice Cube",rarity:"Common"},{name:"Snowflake",rarity:"Common"},{name:"Icicle",rarity:"Common"},{name:"Snow Leopard",rarity:"Uncommon"},{name:"Arctic Fox",rarity:"Uncommon"},{name:"Seal",rarity:"Uncommon"},{name:"Husky",rarity:"Uncommon"},{name:"Reindeer",rarity:"Uncommon"},{name:"Arctic Hare",rarity:"Uncommon"},{name:"Polar Bear",rarity:"Rare"},{name:"Ice Slime",rarity:"Rare"},{name:"Walrus",rarity:"Rare"},{name:"Snow Tiger",rarity:"Rare"},{name:"Snowy Owl",rarity:"Rare"},{name:"Frost Wolf",rarity:"Rare"},{name:"Yeti",rarity:"Epic"},{name:"Frost Wraith",rarity:"Epic"},{name:"Ice Dragon",rarity:"Epic"},{name:"Blizzard Golem",rarity:"Epic"},{name:"Ice Elemental",rarity:"Legendary"},{name:"Blizzard Beast",rarity:"Legendary"},{name:"Frost Giant",rarity:"Legendary"},{name:"Frozen Phoenix",rarity:"Mythic"},{name:"Crystal Heart",rarity:"Mythic"},{name:"Ice Scepter",rarity:"Mythic"},{name:"Aurora Spirit",rarity:"Chroma"},{name:"Diamond Snowflake",rarity:"Chroma"},{name:"Frozen Rainbow",rarity:"Chroma"},{name:"Eternal Frost",rarity:"Immortal"},{name:"Winter God",rarity:"Godly"},{name:"Black Ice Demon",rarity:"Abyssal"}],"Bot Pack":[{name:"Rusty Robot",rarity:"Common"},{name:"Old PC",rarity:"Common"},{name:"Calculator",rarity:"Common"},{name:"Floppy Disk",rarity:"Common"},{name:"USB Drive",rarity:"Common"},{name:"Circuit Board",rarity:"Common"},{name:"Laptop",rarity:"Uncommon"},{name:"Rocket Bot",rarity:"Uncommon"},{name:"Drone",rarity:"Uncommon"},{name:"Smart Watch",rarity:"Uncommon"},{name:"Tablet",rarity:"Uncommon"},{name:"VR Headset",rarity:"Uncommon"},{name:"Mega Bot",rarity:"Rare"},{name:"Cyber Dog",rarity:"Rare"},{name:"Robot Arm",rarity:"Rare"},{name:"Security Bot",rarity:"Rare"},{name:"Nano Bot",rarity:"Rare"},{name:"Tech Spider",rarity:"Rare"},{name:"AI Core",rarity:"Epic"},{name:"Holo Bot",rarity:"Epic"},{name:"Combat Mech",rarity:"Epic"},{name:"Battle Droid",rarity:"Epic"},{name:"Tim the Alien",rarity:"Legendary"},{name:"Neural Network",rarity:"Legendary"},{name:"Cyborg",rarity:"Legendary"},{name:"Quantum Processor",rarity:"Mythic"},{name:"Singularity Core",rarity:"Mythic"},{name:"Binary Blade",rarity:"Mythic"},{name:"Neon Mech",rarity:"Chroma"},{name:"Holographic AI",rarity:"Chroma"},{name:"Digital Phoenix",rarity:"Chroma"},{name:"Prime Sentinel",rarity:"Immortal"},{name:"Tech Deity",rarity:"Godly"},{name:"Void Machine",rarity:"Abyssal"}],"Breakfast Pack":[{name:"Toast",rarity:"Common"},{name:"Cereal",rarity:"Common"},{name:"Egg",rarity:"Common"},{name:"Bagel",rarity:"Common"},{name:"Butter",rarity:"Common"},{name:"Jam",rarity:"Common"},{name:"Waffle",rarity:"Uncommon"},{name:"Bacon",rarity:"Uncommon"},{name:"Donut",rarity:"Uncommon"},{name:"Croissant",rarity:"Uncommon"},{name:"Sausage",rarity:"Uncommon"},{name:"Hash Brown",rarity:"Uncommon"},{name:"Pancakes",rarity:"Rare"},{name:"French Toast",rarity:"Rare"},{name:"Muffin",rarity:"Rare"},{name:"Coffee",rarity:"Rare"},{name:"Smoothie",rarity:"Rare"},{name:"Yogurt Parfait",rarity:"Rare"},{name:"Omelet",rarity:"Epic"},{name:"Orange Juice",rarity:"Epic"},{name:"Avocado Toast",rarity:"Epic"},{name:"Eggs Benedict",rarity:"Epic"},{name:"Lucky Cat",rarity:"Legendary"},{name:"Breakfast Burrito",rarity:"Legendary"},{name:"Grand Slam",rarity:"Legendary"},{name:"Golden Syrup",rarity:"Mythic"},{name:"Maple Leaf Spirit",rarity:"Mythic"},{name:"Divine Breakfast",rarity:"Mythic"},{name:"Rainbow Pancake",rarity:"Chroma"},{name:"Crystal Honey",rarity:"Chroma"},{name:"Prismatic Waffle",rarity:"Chroma"},{name:"Infinite Buffet",rarity:"Immortal"},{name:"Breakfast Lord",rarity:"Godly"},{name:"Burnt Shadow",rarity:"Abyssal"}],"Safari Pack":[{name:"Zebra",rarity:"Common"},{name:"Giraffe",rarity:"Common"},{name:"Meerkat",rarity:"Common"},{name:"Gazelle",rarity:"Common"},{name:"Ostrich",rarity:"Common"},{name:"Wildebeest",rarity:"Common"},{name:"Rhino",rarity:"Uncommon"},{name:"Hippo",rarity:"Uncommon"},{name:"Warthog",rarity:"Uncommon"},{name:"Hyena",rarity:"Uncommon"},{name:"Baboon",rarity:"Uncommon"},{name:"Mongoose",rarity:"Uncommon"},{name:"Elephant",rarity:"Rare"},{name:"Cheetah",rarity:"Rare"},{name:"Leopard",rarity:"Rare"},{name:"Cape Buffalo",rarity:"Rare"},{name:"African Wild Dog",rarity:"Rare"},{name:"Black Panther",rarity:"Rare"},{name:"Lion",rarity:"Epic"},{name:"Gorilla",rarity:"Epic"},{name:"Crocodile",rarity:"Epic"},{name:"Silverback",rarity:"Epic"},{name:"King of the Jungle",rarity:"Legendary"},{name:"White Lion",rarity:"Legendary"},{name:"Alpha Elephant",rarity:"Legendary"},{name:"Sacred Elephant",rarity:"Mythic"},{name:"Ivory Guardian",rarity:"Mythic"},{name:"Tribal Mask",rarity:"Mythic"},{name:"Spectrum Tiger",rarity:"Chroma"},{name:"Golden Savanna",rarity:"Chroma"},{name:"Rainbow Zebra",rarity:"Chroma"},{name:"Ancient Mammoth",rarity:"Immortal"},{name:"Savanna God",rarity:"Godly"},{name:"Shadow Predator",rarity:"Abyssal"}],"Medieval Pack":[{name:"Peasant",rarity:"Common"},{name:"Squire",rarity:"Common"},{name:"Blacksmith",rarity:"Common"},{name:"Bard",rarity:"Common"},{name:"Knight",rarity:"Uncommon"},{name:"Archer",rarity:"Uncommon"},{name:"Monk",rarity:"Uncommon"},{name:"Guard",rarity:"Uncommon"},{name:"Wizard",rarity:"Rare"},{name:"Jester",rarity:"Rare"},{name:"Noble",rarity:"Rare"},{name:"Paladin",rarity:"Rare"},{name:"Queen",rarity:"Epic"},{name:"Dragon Knight",rarity:"Epic"},{name:"Dark Sorcerer",rarity:"Epic"},{name:"King",rarity:"Legendary"},{name:"Royal Guard",rarity:"Legendary"},{name:"Excalibur",rarity:"Mythic"},{name:"Crown of Light",rarity:"Mythic"},{name:"Crystal Paladin",rarity:"Chroma"},{name:"Rainbow Knight",rarity:"Chroma"},{name:"Eternal Crusader",rarity:"Immortal"},{name:"Divine Emperor",rarity:"Godly"},{name:"Dark Warlord",rarity:"Abyssal"}],"Space Pack":[{name:"Asteroid",rarity:"Common"},{name:"Satellite",rarity:"Common"},{name:"Moon Rock",rarity:"Common"},{name:"Comet",rarity:"Common"},{name:"Astronaut",rarity:"Uncommon"},{name:"UFO",rarity:"Uncommon"},{name:"Space Probe",rarity:"Uncommon"},{name:"Rocket",rarity:"Uncommon"},{name:"Space Ranger",rarity:"Rare"},{name:"Mars Rover",rarity:"Rare"},{name:"Solar Panel",rarity:"Rare"},{name:"Star Navigator",rarity:"Rare"},{name:"Alien",rarity:"Epic"},{name:"Planet",rarity:"Epic"},{name:"Nebula Explorer",rarity:"Epic"},{name:"Black Hole",rarity:"Legendary"},{name:"Quasar",rarity:"Legendary"},{name:"Supernova Core",rarity:"Mythic"},{name:"Galactic Crown",rarity:"Mythic"},{name:"Cosmic Prism",rarity:"Chroma"},{name:"Aurora Nebula",rarity:"Chroma"},{name:"Starforged Titan",rarity:"Immortal"},{name:"Celestial Being",rarity:"Godly"},{name:"Void of Space",rarity:"Abyssal"}],"Wonderland Pack":[{name:"White Rabbit",rarity:"Common"},{name:"Caterpillar",rarity:"Common"},{name:"Teacup",rarity:"Common"},{name:"Playing Card",rarity:"Common"},{name:"Cheshire Cat",rarity:"Uncommon"},{name:"Mad Hatter",rarity:"Uncommon"},{name:"March Hare",rarity:"Uncommon"},{name:"Dormouse",rarity:"Uncommon"},{name:"Tweedle Dee",rarity:"Rare"},{name:"Tweedle Dum",rarity:"Rare"},{name:"Flamingo",rarity:"Rare"},{name:"Mock Turtle",rarity:"Rare"},{name:"Queen of Hearts",rarity:"Epic"},{name:"Alice",rarity:"Epic"},{name:"Red Queen",rarity:"Epic"},{name:"Time Keeper",rarity:"Legendary"},{name:"Bandersnatch",rarity:"Legendary"},{name:"Jabberwocky",rarity:"Mythic"},{name:"Vorpal Blade",rarity:"Mythic"},{name:"Kaleidoscope Rabbit",rarity:"Chroma"},{name:"Rainbow Tea Party",rarity:"Chroma"},{name:"Forever Alice",rarity:"Immortal"},{name:"Wonderland Deity",rarity:"Godly"},{name:"Nightmare Realm",rarity:"Abyssal"}],"Dino Pack":[{name:"Fossil",rarity:"Common"},{name:"Egg",rarity:"Common"},{name:"Dino Bone",rarity:"Common"},{name:"Baby Raptor",rarity:"Common"},{name:"Velociraptor",rarity:"Uncommon"},{name:"Stegosaurus",rarity:"Uncommon"},{name:"Ankylosaurus",rarity:"Uncommon"},{name:"Parasaurolophus",rarity:"Uncommon"},{name:"Triceratops",rarity:"Rare"},{name:"Brontosaurus",rarity:"Rare"},{name:"Allosaurus",rarity:"Rare"},{name:"Carnotaurus",rarity:"Rare"},{name:"Pterodactyl",rarity:"Epic"},{name:"Spinosaurus",rarity:"Epic"},{name:"Mosasaurus",rarity:"Epic"},{name:"Tyrannosaurus Rex",rarity:"Legendary"},{name:"Indominus Rex",rarity:"Legendary"},{name:"Alpha Raptor",rarity:"Mythic"},{name:"Fossil King",rarity:"Mythic"},{name:"Prism Rex",rarity:"Chroma"},{name:"Rainbow Dino",rarity:"Chroma"},{name:"Prehistoric Titan",rarity:"Immortal"},{name:"Dino Overlord",rarity:"Godly"},{name:"Extinction Beast",rarity:"Abyssal"}],"Spooky Pack":[{name:"Pumpkin",rarity:"Common"},{name:"Bat",rarity:"Common"},{name:"Black Cat",rarity:"Common"},{name:"Spider",rarity:"Common"},{name:"Ghost",rarity:"Uncommon"},{name:"Skeleton",rarity:"Uncommon"},{name:"Scarecrow",rarity:"Uncommon"},{name:"Mummy",rarity:"Uncommon"},{name:"Witch",rarity:"Rare"},{name:"Zombie",rarity:"Rare"},{name:"Frankenstein",rarity:"Rare"},{name:"Haunted House",rarity:"Rare"},{name:"Vampire",rarity:"Epic"},{name:"Werewolf",rarity:"Epic"},{name:"Headless Horseman",rarity:"Epic"},{name:"Grim Reaper",rarity:"Legendary"},{name:"Demon",rarity:"Legendary"},{name:"Phantom King",rarity:"Mythic"},{name:"Soul Keeper",rarity:"Mythic"},{name:"Spectral Wraith",rarity:"Chroma"},{name:"Ghost Flame",rarity:"Chroma"},{name:"Undead Lord",rarity:"Immortal"},{name:"Death God",rarity:"Godly"},{name:"Absolute Darkness",rarity:"Abyssal"}],"Outback Pack":[{name:"Dingo",rarity:"Common"},{name:"Wombat",rarity:"Common"},{name:"Echidna",rarity:"Common"},{name:"Kookaburra",rarity:"Common"},{name:"Emu",rarity:"Uncommon"},{name:"Platypus",rarity:"Uncommon"},{name:"Wallaby",rarity:"Uncommon"},{name:"Frilled Lizard",rarity:"Uncommon"},{name:"Koala",rarity:"Rare"},{name:"Tasmanian Devil",rarity:"Rare"},{name:"Cassowary",rarity:"Rare"},{name:"Sugar Glider",rarity:"Rare"},{name:"Crocodile",rarity:"Epic"},{name:"Kangaroo",rarity:"Epic"},{name:"Saltwater Croc",rarity:"Epic"},{name:"Drop Bear",rarity:"Legendary"},{name:"Dingo Alpha",rarity:"Legendary"},{name:"Dreamtime Serpent",rarity:"Mythic"},{name:"Boomerang Spirit",rarity:"Mythic"},{name:"Opal Kangaroo",rarity:"Chroma"},{name:"Rainbow Serpent",rarity:"Chroma"},{name:"Ancient Bunyip",rarity:"Immortal"},{name:"Outback Deity",rarity:"Godly"},{name:"Void Dingo",rarity:"Abyssal"}],"Pirate Pack":[{name:"Cabin Boy",rarity:"Common"},{name:"Sailor",rarity:"Common"},{name:"Deckhand",rarity:"Common"},{name:"Ship's Cook",rarity:"Common"},{name:"Pirate",rarity:"Uncommon"},{name:"Parrot",rarity:"Uncommon"},{name:"Navigator",rarity:"Uncommon"},{name:"Powder Monkey",rarity:"Uncommon"},{name:"Treasure Chest",rarity:"Rare"},{name:"First Mate",rarity:"Rare"},{name:"Cannon Master",rarity:"Rare"},{name:"Buccaneer",rarity:"Rare"},{name:"Pirate Ship",rarity:"Epic"},{name:"Kraken Hunter",rarity:"Epic"},{name:"Ghost Ship",rarity:"Epic"},{name:"Pirate King",rarity:"Legendary"},{name:"Admiral",rarity:"Legendary"},{name:"Cursed Treasure",rarity:"Mythic"},{name:"Black Pearl",rarity:"Mythic"},{name:"Jeweled Galleon",rarity:"Chroma"},{name:"Golden Compass",rarity:"Chroma"},{name:"Flying Dutchman",rarity:"Immortal"},{name:"Sea God",rarity:"Godly"},{name:"Abyssal Corsair",rarity:"Abyssal"}],"Tropical Pack":[{name:"Coconut",rarity:"Common"},{name:"Pineapple",rarity:"Common"},{name:"Palm Tree",rarity:"Common"},{name:"Hibiscus",rarity:"Common"},{name:"Toucan",rarity:"Uncommon"},{name:"Flamingo",rarity:"Uncommon"},{name:"Tree Frog",rarity:"Uncommon"},{name:"Chameleon",rarity:"Uncommon"},{name:"Monkey",rarity:"Rare"},{name:"Jaguar",rarity:"Rare"},{name:"Sloth",rarity:"Rare"},{name:"Anaconda",rarity:"Rare"},{name:"Tiki Mask",rarity:"Epic"},{name:"Parrot",rarity:"Epic"},{name:"Volcano Spirit",rarity:"Epic"},{name:"Island Spirit",rarity:"Legendary"},{name:"Beach Guardian",rarity:"Legendary"},{name:"Golden Tiki",rarity:"Mythic"},{name:"Tropical Crown",rarity:"Mythic"},{name:"Rainbow Macaw",rarity:"Chroma"},{name:"Sunset Paradise",rarity:"Chroma"},{name:"Eternal Paradise",rarity:"Immortal"},{name:"Jungle God",rarity:"Godly"},{name:"Shadow Rainforest",rarity:"Abyssal"}],"Candy Pack":[{name:"Gummy Bear",rarity:"Common"},{name:"Lollipop",rarity:"Common"},{name:"Jawbreaker",rarity:"Common"},{name:"Cotton Candy",rarity:"Common"},{name:"Chocolate Bar",rarity:"Uncommon"},{name:"Candy Cane",rarity:"Uncommon"},{name:"Taffy",rarity:"Uncommon"},{name:"Jelly Bean",rarity:"Uncommon"},{name:"Cupcake",rarity:"Rare"},{name:"Ice Cream",rarity:"Rare"},{name:"Macaron",rarity:"Rare"},{name:"Fudge",rarity:"Rare"},{name:"Birthday Cake",rarity:"Epic"},{name:"Rainbow Candy",rarity:"Epic"},{name:"Chocolate Fountain",rarity:"Epic"},{name:"Unicorn Swirl",rarity:"Legendary"},{name:"Candy Castle",rarity:"Legendary"},{name:"Enchanted Candy",rarity:"Mythic"},{name:"Sweet Dream",rarity:"Mythic"},{name:"Hypnotic Swirl",rarity:"Chroma"},{name:"Prismatic Sugar",rarity:"Chroma"},{name:"Everlasting Gobstopper",rarity:"Immortal"},{name:"Sugar Deity",rarity:"Godly"},{name:"Dark Chocolate Void",rarity:"Abyssal"}],"Fantasy Pack":[{name:"Fairy",rarity:"Common"},{name:"Elf",rarity:"Common"},{name:"Pixie",rarity:"Common"},{name:"Sprite",rarity:"Common"},{name:"Dwarf",rarity:"Uncommon"},{name:"Centaur",rarity:"Uncommon"},{name:"Gnome",rarity:"Uncommon"},{name:"Nymph",rarity:"Uncommon"},{name:"Griffin",rarity:"Rare"},{name:"Wizard",rarity:"Rare"},{name:"Pegasus",rarity:"Rare"},{name:"Minotaur",rarity:"Rare"},{name:"Unicorn",rarity:"Epic"},{name:"Phoenix",rarity:"Epic"},{name:"Hydra",rarity:"Epic"},{name:"Dragon",rarity:"Legendary"},{name:"Wyvern",rarity:"Legendary"},{name:"Ancient Dragon",rarity:"Mythic"},{name:"Dragon's Eye",rarity:"Mythic"},{name:"Celestial Phoenix",rarity:"Chroma"},{name:"Rainbow Unicorn",rarity:"Chroma"},{name:"Immortal Sorcerer",rarity:"Immortal"},{name:"Creator Dragon",rarity:"Godly"},{name:"Void Dragon",rarity:"Abyssal"}]};
+        const chances = {Abyssal:0.1,Godly:0.3,Immortal:0.5,Chroma:0.7,Mythic:0.9,Legendary:1,Epic:3,Rare:8,Uncommon:18,Common:22};
+        let tokens=100,pendingPack={name:"",cost:0},autoOpenMode=false,collectedCards=new Set(),allCardsUnlocked=false,currentUser=null,isCollectionView=false;
+        
+        function saveToStorage(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+                return true;
+            } catch(e) {
+                console.warn('localStorage not available');
+                return false;
+            }
+        }
+        
+        function getFromStorage(key) {
+            try {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : null;
+            } catch(e) {
+                return null;
+            }
+        }
+        
+        let userDatabase = getFromStorage('blooket_users') || {};
+        
+        function showLogin(){document.getElementById('loginView').style.display='block';document.getElementById('signupView').style.display='none';document.getElementById('loginError').textContent='';document.getElementById('signupError').textContent=''}
+        function showSignup(){document.getElementById('loginView').style.display='none';document.getElementById('signupView').style.display='block';document.getElementById('loginError').textContent='';document.getElementById('signupError').textContent=''}
+        
+        function updateProfilePicture(){
+            if(currentUser){
+                const initial=currentUser.charAt(0).toUpperCase();
+                document.getElementById('profilePicture').textContent=initial;
+                document.getElementById('profilePicture').style.display='flex';
+            }else{
+                document.getElementById('profilePicture').style.display='none';
+            }
+        }
+        
+        function showProfilePopup(){
+            if(!currentUser)return;
+            const initial=currentUser.charAt(0).toUpperCase();
+            document.getElementById('profileIconLarge').textContent=initial;
+            document.getElementById('profileUsername').textContent=currentUser;
+            document.getElementById('profileTokens').textContent=tokens;
+            document.getElementById('profileCards').textContent=collectedCards.size;
+            document.getElementById('profileCreated').textContent=userDatabase[currentUser].createdDate||'Unknown';
+            document.getElementById('profileOverlay').classList.add('active');
+        }
+        
+        function closeProfilePopup(){
+            document.getElementById('profileOverlay').classList.remove('active');
+        }
+        
+        function toggleCollection(){
+            isCollectionView=!isCollectionView;
+            const marketView=document.getElementById('marketView');
+            const collectionView=document.getElementById('collectionView');
+            const toggleBtn=document.getElementById('collectionToggle');
+            
+            if(isCollectionView){
+                marketView.style.display='none';
+                collectionView.classList.add('active');
+                toggleBtn.textContent='Market';
+                renderCollection();
+            }else{
+                marketView.style.display='grid';
+                collectionView.classList.remove('active');
+                toggleBtn.textContent='Collection';
+            }
+        }
+        
+        function handleSignup(){
+            let username=document.getElementById('signupUsername').value.trim();
+            let password=document.getElementById('signupPassword').value;
+            let confirmPassword=document.getElementById('signupConfirmPassword').value;
+            
+            if(!username||!password){
+                document.getElementById('signupError').textContent='Please fill all fields';
+                return;
+            }
+            if(password!==confirmPassword){
+                document.getElementById('signupError').textContent='Passwords do not match';
+                return;
+            }
+            if(userDatabase[username]){
+                document.getElementById('signupError').textContent='Username already exists';
+                return;
+            }
+            
+            userDatabase[username]={password:password,tokens:100,collected:[],createdDate:new Date().toLocaleDateString()};
+            saveToStorage('blooket_users', userDatabase);
+            saveToStorage('blooket_last_user', username);
+            
+            currentUser=username;
+            tokens=100;
+            collectedCards=new Set();
+            
+            document.getElementById('authOverlay').classList.remove('active');
+            updateProfilePicture();
+            document.getElementById('logoutBtn').style.display='block';
+            updateTokens();
+        }
+        
+        function handleLogin(){
+            let username=document.getElementById('loginUsername').value.trim();
+            let password=document.getElementById('loginPassword').value;
+            
+            if(!username||!password){
+                document.getElementById('loginError').textContent='Please fill all fields';
+                return;
+            }
+            if(!userDatabase[username]||userDatabase[username].password!==password){
+                document.getElementById('loginError').textContent='Invalid username or password';
+                return;
+            }
+            
+            currentUser=username;
+            saveToStorage('blooket_last_user', username);
+            loadUserData();
+            
+            document.getElementById('authOverlay').classList.remove('active');
+            document.getElementById('logoutBtn').style.display='block';
+            updateProfilePicture();
+        }
+        
+        function saveUserData(){
+            if(!currentUser)return;
+            userDatabase[currentUser].tokens=tokens;
+            userDatabase[currentUser].collected=Array.from(collectedCards);
+            saveToStorage('blooket_users', userDatabase);
+        }
+        
+        function loadUserData(){
+            if(userDatabase[currentUser]){
+                tokens=userDatabase[currentUser].tokens||100;
+                collectedCards=new Set(userDatabase[currentUser].collected||[]);
+                updateTokens();
+            }
+        }
+        
+        function logout(){
+            document.getElementById('logoutOverlay').classList.add('active');
+        }
+        
+        function closeLogoutConfirmation(){
+            document.getElementById('logoutOverlay').classList.remove('active');
+        }
+        
+        function confirmResetAccount(){
+            document.getElementById('resetOverlay').classList.add('active');
+        }
+        
+        function closeResetConfirmation(){
+            document.getElementById('resetOverlay').classList.remove('active');
+        }
+        
+        function resetAccount(){
+            if(!currentUser)return;
+            tokens=100;
+            collectedCards=new Set();
+            allCardsUnlocked=false;
+            userDatabase[currentUser].tokens=100;
+            userDatabase[currentUser].collected=[];
+            saveToStorage('blooket_users', userDatabase);
+            updateTokens();
+            closeResetConfirmation();
+            closeProfilePopup();
+            document.getElementById('adminStatus').textContent='Account reset successfully!';
+        }
+        
+        function confirmLogout(){
+            closeLogoutConfirmation();
+            saveUserData();
+            saveToStorage('blooket_last_user', null);
+            currentUser=null;
+            tokens=100;
+            collectedCards=new Set();
+            allCardsUnlocked=false;
+            isCollectionView=false;
+            document.getElementById('authOverlay').classList.add('active');
+            document.getElementById('logoutBtn').style.display='none';
+            document.getElementById('profilePicture').style.display='none';
+            document.getElementById('marketView').style.display='grid';
+            document.getElementById('collectionView').classList.remove('active');
+            document.getElementById('collectionToggle').textContent='Collection';
+            showLogin();
+            updateTokens();
+        }
+        
+        window.addEventListener('load', function() {
+            const lastUser = getFromStorage('blooket_last_user');
+            if (lastUser && userDatabase[lastUser]) {
+                currentUser = lastUser;
+                loadUserData();
+                document.getElementById('authOverlay').classList.remove('active');
+                updateProfilePicture();
+                document.getElementById('logoutBtn').style.display = 'block';
+            }
+        });
+        
+        function updateTokens(){document.getElementById('tokenCount').textContent=tokens;if(currentUser)saveUserData()}
+        function toggleMode(){autoOpenMode=!autoOpenMode;const btn=document.getElementById('toggleBtn');btn.textContent=autoOpenMode?'Auto Open':'Confirm';btn.classList.toggle('auto-mode',autoOpenMode)}
+        function handlePackClick(boxName,cost){if(tokens<cost)return;if(autoOpenMode){tokens-=cost;updateTokens();revealBlookPopup(boxName)}else{showConfirmation(boxName,cost)}}
+        function getRandomCard(boxName){let cardsInPack=packBlooks[boxName]||packBlooks["Aquatic Pack"],pool=[];cardsInPack.forEach(card=>{for(let i=0;i<chances[card.rarity];i++)pool.push(card)});return pool[Math.floor(Math.random()*pool.length)]}
+        function showConfirmation(boxName,cost){pendingPack={name:boxName,cost:cost};document.getElementById('confirmPackName').textContent=boxName;document.getElementById('confirmPackPrice').textContent=cost;document.getElementById('confirmOverlay').classList.add('active')}
+        function closeConfirmation(){document.getElementById('confirmOverlay').classList.remove('active')}
+        function confirmPurchase(){closeConfirmation();tokens-=pendingPack.cost;updateTokens();revealBlookPopup(pendingPack.name)}
+        function revealBlookPopup(boxName){let card=getRandomCard(boxName),rarityClass=card.rarity;collectedCards.add(card.name);saveUserData();let html=`<div class="blook-result-card ${rarityClass}"><div>${card.name}</div><div class="rarity ${rarityClass}">${card.rarity}</div><div style="margin-top:7px;color:#888;font-size:.95rem;">from: <b>${boxName}</b></div></div>`;document.getElementById('blookRevealContainer').innerHTML=html;document.getElementById('blookOverlay').classList.add('active')}
+        function closeBlookPopup(){document.getElementById('blookOverlay').classList.remove('active')}
+        function renderCollection(){const grid=document.getElementById('collectionGrid');grid.innerHTML='';let allCards=[];for(let pack in packBlooks){allCards=allCards.concat(packBlooks[pack])}allCards.forEach(card=>{const isCollected=collectedCards.has(card.name),cardDiv=document.createElement('div');cardDiv.className='collection-card'+(isCollected?'':' locked');if(isCollected){cardDiv.innerHTML=`<div class="card-name">${card.name}</div><div class="card-rarity rarity ${card.rarity}">${card.rarity}</div>`}else{cardDiv.innerHTML=`<div class="lock-icon">🔒</div><div class="card-name">${card.name}</div><div class="card-rarity">???</div>`}grid.appendChild(cardDiv)})}
+        function showAdminPopup(){let overlay=document.getElementById('adminOverlay');overlay.classList.add('active');document.getElementById('adminLogin').style.display="block";document.getElementById('adminPanel').style.display="none";document.getElementById('adminError').textContent="";document.getElementById('adminStatus').textContent="";document.getElementById('adminPwd').value="";document.getElementById('tokenInput').value=""}
+        function closeAdminPopup(){document.getElementById('adminOverlay').classList.remove('active')}
+        function adminLogin(){let pwd=document.getElementById('adminPwd').value;if(pwd==="123"){document.getElementById('adminLogin').style.display="none";document.getElementById('adminPanel').style.display="block";document.getElementById('adminError').textContent="";document.getElementById('adminStatus').textContent="";document.getElementById('tokenInput').value=""}else{document.getElementById('adminError').textContent="Wrong password. Try again."}}
+        function setTokens(){let amt=parseInt(document.getElementById('tokenInput').value,10);if(!isNaN(amt)&&amt>=0){tokens=amt;updateTokens();document.getElementById('adminStatus').textContent="Tokens set to "+amt+"!";document.getElementById('tokenInput').value=""}else{document.getElementById('adminStatus').textContent="Enter a valid number."}}
+        function toggleAllCards(){if(allCardsUnlocked){collectedCards.clear();document.getElementById('unlockBtn').textContent="Unlock All Cards";document.getElementById('adminStatus').textContent="All cards locked!";allCardsUnlocked=false}else{for(let pack in packBlooks){packBlooks[pack].forEach(card=>{collectedCards.add(card.name)})}document.getElementById('unlockBtn').textContent="Lock All Cards";document.getElementById('adminStatus').textContent="All cards unlocked!";allCardsUnlocked=true}saveUserData()}
+        document.addEventListener("keydown",function(e){if(document.activeElement.classList.contains("admin-btn")&&(e.key==="Enter"||e.key===" ")){showAdminPopup()}if(document.activeElement.classList.contains("pack-card")&&(e.key==="Enter"||e.key===" ")){document.activeElement.click()}});
+        updateTokens();
+    </script>
+</body>
+</html>
